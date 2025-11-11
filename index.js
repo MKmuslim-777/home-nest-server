@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 3000;
 const app = express();
 
@@ -20,15 +20,22 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
 
     const homeNestDB = client.db("home-nest");
     const propertiesCollection = homeNestDB.collection("properties");
 
     app.get("/properties", async (req, res) => {
       const result = await propertiesCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get("/properties/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await propertiesCollection.findOne(query);
       res.send(result);
     });
 
