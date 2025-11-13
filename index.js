@@ -36,6 +36,18 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/properties", async (req, res) => {
+      const email = req.query.email;
+      let query = {};
+      if (email) {
+        query = { "postedBy.email": email };
+      }
+
+      const cursor = propertiesCollection.find(query).sort({ price: 1 });
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
     app.post("/properties", async (req, res) => {
       const newData = req.body;
       const result = await propertiesCollection.insertOne(newData);
